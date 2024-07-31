@@ -1,0 +1,8 @@
+eML Header | 0.01 | python | 07/28/2024 16:13:20.603820 | 07/28/2024 16:13:20.603820
+boolean := <bool>False
+int := <int>666
+float:= <float>666.666
+complex := <complex>(1+1j)
+string := <str>this is an eml test of the primitives
+date := <date>07/28/2024
+datetime := <datetime>07/28/2024 16:13:20.603820

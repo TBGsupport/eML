@@ -1,0 +1,22 @@
+eML Header | 0.01 | python | 07/28/2024 16:13:20.603820 | 07/28/2024 16:13:20.603820
+list1 := <list|3> <int>1
+                  <int>2
+                  <int>3
+list2 := <list|3> <int>1
+                  <float>1.3
+                  <str>yup
+set1 := <set|3> <int>1
+                <int>2
+                <int>3
+set2 := <set|3> <str>yup
+                <int>1
+                <float>1.3
+dict1 := <dict|3><str>1|<int>1
+                 <str>2|<int>2
+                 <str>3|<int>3
+dict2 := <dict|3><int>1|<int>1
+                 <str>2|<int>2
+                 <float>3.0|<int>3
+tuple 1 := <tuple|3> <int>1
+                     <int>2
+                     <str>g

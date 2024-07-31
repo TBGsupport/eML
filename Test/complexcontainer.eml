@@ -1,0 +1,50 @@
+eML Header | 0.01 | python | 07/28/2024 16:13:20.604821 | 07/28/2024 16:13:20.604821
+complex list 1 := <list|8> <list |4><int>1
+                                    <int>2
+                                    <int>34
+                                    <int>4
+                           <list |4><int>2
+                                    <str>q
+                                    <int>7
+                                    <datetime>07/28/2024 16:13:20.604821
+                           <set |3><int>3
+                                   <int>4
+                                   <int>6
+                           <set |4><str>qs
+                                   <int>4
+                                   <datetime>07/28/2024 16:13:20.604821
+                                   <int>7
+                           <dict |3><str>a|<int>5
+                                    <str>b|<int>2
+                                    <str>c|<int>3
+                           <dict |3><str>a|<int>6
+                                    <int>2|<int>2
+                                    <str>c|<int>3
+                           <dict |3><str>a|<int>7
+                                    <str>b|<int>2
+                                    <str>c|<date>07/28/2024
+                           <dict |3><str>a|<int>8
+                                    <int>2|<int>2
+                                    <str>c|<datetime>07/28/2024 16:13:20.604821
+complex dict 1 := <dict|5><str>a|<dict |3><str>a|<int>5
+                                          <str>b|<int>2
+                                          <str>c|<int>3
+                          <int>2|<dict |3><str>a|<int>6
+                                          <int>2|<int>2
+                                          <str>c|<int>3
+                          <datetime>07/28/2024 16:13:20.604821|<dict |3><str>a|<int>7
+                                                                        <str>b|<int>2
+                                                                        <str>c|<date>07/28/2024
+                          <int>4|<dict |3><str>a|<int>8
+                                          <int>2|<int>2
+                                          <str>c|<datetime>07/28/2024 16:13:20.604821
+                          <int>5|<dict |3><str>a|<int>9
+                                          <int>2|<int>2
+                                          <str>c|<dict |3><str>c|<int>0
+                                                          <str>ff|<list |4><int>1
+                                                                           <int>2
+                                                                           <int>3
+                                                                           <int>4
+                                                          <str>f|<dict |3><str>d|<str>d
+                                                                          <str>f|<str>f
+                                                                          <str>g|<int>3
