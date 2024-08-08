@@ -24,6 +24,8 @@
 import os
 from datetime import date, datetime
 
+import numpy as np
+
 
 class _Write_eML:  # ================================================================ Write_eML >>>v
   """
@@ -58,11 +60,14 @@ class _Write_eML:  # ===========================================================
     self.linesout = list()
     self.linesout.append('eML Header | ' + str(self.eml_meta_data['version']) + ' | '
                          + self.eml_meta_data['lamguage'] + ' | '
-                         + self.eml_meta_data['creation date'].strftime('%m/%d/%Y %H:%M:%S.%f') + ' | '
+                         + self.eml_meta_data['creation date'].strftime(
+      '%m/%d/%Y %H:%M:%S.%f') + ' | '
                          + self.eml_meta_data['last update'].strftime('%m/%d/%Y %H:%M:%S.%f'))
 
     for id, entrytype in identifiers.items():
       match entrytype:
+        case 'array':
+          self.setArray(id, self.eml_data[id])
         case 'bool':
           self.setBoolean(id, self.eml_data[id])
         case 'int':
@@ -87,6 +92,34 @@ class _Write_eML:  # ===========================================================
           self.setTuple(id, self.eml_data[id])
         case _:
           raise Exception('Write error: invalid entry type ' + str(entrytype))
+    pass
+
+  def setArray(self, identifier, value: np.ndarray):  # ------------------------------- setArray >>
+    """
+    Converts an array to string for output to linesout.
+
+    :param identifier: user defined identifier for this array
+    :param value: the array to be output to a string
+    """
+    datatype = self._getArrayDataType(value)
+    currline = identifier + ' := ' + '<array|' + datatype + '|' + str(value.shape) + '> '
+    bufferlength = len(currline)
+
+    farray = value.flatten()
+
+    isfirst = True
+    for item in farray:
+      if not isfirst:
+        currline = currline + '|'
+      isfirst = False
+      if datatype=='':
+        currline = currline + self._appendPrimitive(item)
+      else:
+        currline = currline + str(item)
+
+    self.linesout.append(currline)
+
+    # currline = ' ' * bufferlength
     pass
 
   def setBoolean(self, identifier, value):  # -------------------------------- setBoolean >>
@@ -510,6 +543,54 @@ class _Write_eML:  # ===========================================================
       return 'datetime'
     elif isinstance(value, date):
       return 'date'
+    elif isinstance(value, np.bool_):
+      return 'bool'
+    elif isinstance(value, np.int8):
+      return 'int8'
+    elif isinstance(value, np.uint8):
+      return 'uint8'
+    elif isinstance(value, np.int16):
+      return 'int16'
+    elif isinstance(value, np.uint16):
+      return 'uint16'
+    elif isinstance(value, np.int32):
+      return 'int32'
+    elif isinstance(value, np.intc):
+      return 'intc'
+    elif isinstance(value, np.uint32):
+      return 'unit32'
+    elif isinstance(value, np.uintc):
+      return 'uintc'
+    elif isinstance(value, np.intp):
+      return 'intp'
+    elif isinstance(value, np.uintp):
+      return 'uintp'
+    elif isinstance(value, np.int32):
+      return 'int32'
+    elif isinstance(value, np.int64):
+      return 'int64'
+    elif isinstance(value, np.uint32):
+      return 'uint32'
+    elif isinstance(value, np.uint64):
+      return 'uint64'
+    elif isinstance(value, np.float16):
+      return 'float16'
+    elif isinstance(value, np.float32):
+      return 'float32'
+    elif isinstance(value, np.float64):
+      return 'float64'
+    elif isinstance(value, np.float96):
+      return 'float96'
+    elif isinstance(value, np.float128):
+      return 'float128'
+    elif isinstance(value, np.complex64):
+      return 'complex64'
+    elif isinstance(value, np.complex128):
+      return 'complex128'
+    elif isinstance(value, np.complex192):
+      return 'complex192'
+    elif isinstance(value, np.complex256):
+      return 'complex256'
     else:
       raise Exception('Write eML error: Invalid primitive data type ' + str(type(value)))
     pass
@@ -536,6 +617,70 @@ class _Write_eML:  # ===========================================================
       return True
     elif isinstance(value, date):
       return True
+    elif isinstance(value, np.bool_):
+      return True
+    elif isinstance(value, np.int8):
+      return True
+    elif isinstance(value, np.uint8):
+      return True
+    elif isinstance(value, np.int16):
+      return True
+    elif isinstance(value, np.uint16):
+      return True
+    elif isinstance(value, np.int32):
+      return True
+    elif isinstance(value, np.intc):
+      return True
+    elif isinstance(value, np.uint32):
+      return True
+    elif isinstance(value, np.uintc):
+      return True
+    elif isinstance(value, np.intp):
+      return True
+    elif isinstance(value, np.uintp):
+      return True
+    elif isinstance(value, np.int32):
+      return True
+    elif isinstance(value, np.int64):
+      return True
+    elif isinstance(value, np.uint32):
+      return True
+    elif isinstance(value, np.uint64):
+      return True
+    elif isinstance(value, np.float16):
+      return True
+    elif isinstance(value, np.float32):
+      return True
+    elif isinstance(value, np.float64):
+      return True
+    # elif isinstance(value, np.float96):
+    #   return True
+    # elif isinstance(value, np.float128):
+    #   return True
+    elif isinstance(value, np.complex64):
+      return True
+    elif isinstance(value, np.complex128):
+      return True
+    # elif isinstance(value, np.complex192):
+    #   return True
+    # elif isinstance(value, np.complex256):
+    #   return True
     else:
       return False
+
+
+
+  def _getArrayDataType(self, value: np.ndarray):  # ------------------------- _getArrayDataType >>
+    """
+
+    :param value:
+    :return:
+    """
+    tmp = value.flatten()
+    dt = self._getPrimitiveDataType(tmp[0])
+    for currval in tmp:
+      if dt != self._getPrimitiveDataType(currval):
+        return ''
+
+    return str(dt)
     pass

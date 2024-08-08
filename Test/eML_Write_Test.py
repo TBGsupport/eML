@@ -24,6 +24,7 @@ from datetime import datetime
 
 from eML import eML
 
+import numpy as np
 
 class eML_Write_Test:
 
@@ -41,7 +42,7 @@ class eML_Write_Test:
     pass
 
   def testContainerWrites(self):
-    eml = eML('C:\\Users\\mccan\\OneDrive\\Software\\Python\\Active\\eML\\Test\\simplecontainer.eml')
+    eml = eML()
     eml.setList('list1', [1, 2, 3])
     eml.setList('list2', [1, 1.3, 'yup'])
     eml.setSet('set1', {1, 2, 3})
@@ -49,7 +50,10 @@ class eML_Write_Test:
     eml.setDict('dict1', {'1':1, '2':2, '3':3})
     eml.setDict('dict2', {1:1, '2':2, 3.0:3})
     eml.setTuple('tuple 1', (1,2,'g'))
-    eml.saveAs()
+    tmparray = np.arange(27)
+    tmparray = tmparray.reshape([3,3,3])
+    eml.setArray('array out', tmparray)
+    eml.saveAs('C:\\Users\\mccan\\OneDrive\\Software\\Python\\Active\\eML\\Test\\simplecontainer.eml')
     pass
 
   def testComplexContainerWrites(self):

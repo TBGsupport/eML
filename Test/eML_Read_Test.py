@@ -44,9 +44,9 @@ class eML_Read_Test:
 
 
 if __name__ == "__main__":
-  print('eON test')
+  print('enl test')
 
-  eML_Read_Test().testPrimitiveReads()
+  # eML_Read_Test().testPrimitiveReads()
 
   eML_Read_Test().testContainerReads()
 

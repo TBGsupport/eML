@@ -20,7 +20,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-from datetime import datetime
+from datetime import datetime, date
+
+import numpy as np
 
 import eStringUtils
 
@@ -48,8 +50,6 @@ class _Read_eML:
 
     self.identifiers = dict()
 
-    hasHeader = False
-
     with open(eML_filename) as file:
       self.linesin = [line.rstrip() for line in file]
 
@@ -58,15 +58,13 @@ class _Read_eML:
       line = self.linesin.pop(0)
 
       if 'eML Header' in line:
-        hasHeader = True
-
         header = line.split('|')
         self.eml_meta_data['version'] = float(header[1].strip())
-        self.eml_meta_data['lamguage']  = header[2].strip()
-        self.eml_meta_data['creation date']  = datetime.strptime(header[3].strip(),
-                                                                 '%m/%d/%Y %H:%M:%S.%f')
-        self.eml_meta_data['last update']  = datetime.strptime(header[4].strip(),
-                                                               '%m/%d/%Y %H:%M:%S.%f')
+        self.eml_meta_data['lamguage'] = header[2].strip()
+        self.eml_meta_data['creation date'] = datetime.strptime(header[3].strip(),
+                                                                '%m/%d/%Y %H:%M:%S.%f')
+        self.eml_meta_data['last update'] = datetime.strptime(header[4].strip(),
+                                                              '%m/%d/%Y %H:%M:%S.%f')
 
       elif ':=' in line:
         # all base lines have a := within the line
@@ -85,6 +83,34 @@ class _Read_eML:
     :return: 3 dicts containing eml_meta_data, identifiers, eml_data
     """
     return self.eml_meta_data, self.identifiers, self.eml_data
+    pass
+
+  def _decomposeArray(self, array_format: str, valuein):  # -------------- _decomposeArray >>
+    """
+    Decomposes a list
+
+    :param number_of_elements: the number of elements in the list
+    :param valuein: the list (string)
+    :return: the decomposed list
+    """
+    tmparraydim = array_format[2][1:-1].split(',')
+    arraydim = list()
+    for dim in tmparraydim:
+      arraydim.append(int(dim))
+    strvalues = valuein.split('|')
+
+    if len(array_format[1]) == 0:
+      # this is an object array
+      arrayout = np.zeros(len(strvalues), dtype=object)
+      for ii  in range(len(strvalues)):
+        format, value = self._getFormatValue(strvalues[ii])
+        arrayout[ii] = self._decomposePrimitive(format, value)
+      pass
+    else:
+      # this is a constant type array
+      arrayout = self._convertConstantTypeArray(array_format[1], strvalues)
+
+    return arrayout.reshape(arraydim)
     pass
 
   def _decomposeDict(self, number_of_elements: int, dictin: str):  # ----------- _decomposeDict >>
@@ -127,6 +153,8 @@ class _Read_eML:
     else:
       # base level collection/container declaration
       match (format[0].strip()):
+        case 'array':
+          return self._decomposeArray(format, value)
         case 'dict':
           return self._decomposeDict(int(format[1]), value)
         case 'list':
@@ -219,7 +247,7 @@ class _Read_eML:
     return setout
     pass
 
-  def _decomposeFrozenSet(self, number_of_elements: int, valuein: str):  #-- _decomposeFrozenSet >>
+  def _decomposeFrozenSet(self, number_of_elements: int, valuein: str):  # -- _decomposeFrozenSet >>
     """
     Decomposes a Frozenset
 
@@ -312,4 +340,84 @@ class _Read_eML:
     value = format_n_value[indx2 + 1:]
 
     return format, value
+    pass
+
+  def _convertConstantTypeArray(self, format: str,  # ---------------- _convertConstantTypeArray >>
+                                strvalues: list):
+    """
+
+    :param format:
+    :param strvalues:
+    :return:
+    """
+    # python language data types
+    match format:
+      case 'bool':
+        arrayout = np.array(list(map(bool, strvalues)), dtype=bool)
+      case 'int':
+        arrayout = np.array(list(map(int, strvalues)), dtype=int)
+      case 'float':
+        arrayout = np.array(list(map(float, strvalues)), dtype=float)
+      case 'complex':
+        arrayout = np.array(list(map(complex, strvalues)), dtype=complex)
+      case 'str':
+        arrayout = np.array(list(map(str, strvalues)), dtype=str)
+      case 'datetime':
+        arrayout = np.zeros(len(strvalues), dtype=datetime)
+        for ii in range(len(strvalues)):
+          arrayout[ii] = datetime.strptime(strvalues[ii], '%m/%d/%Y %H:%M:%S.%f')
+      case 'date':
+        arrayout = np.zeros(len(strvalues), dtype=date)
+        for ii in range(len(strvalues)):
+          arrayout[ii] = datetime.strptime(strvalues[ii], '%m/%d/%Y').date()
+      case 'int8':
+        arrayout = np.array(list(map(np.int8, strvalues)), dtype=np.int8)
+      case 'uint8':
+        arrayout = np.array(list(map(np.uint8, strvalues)), dtype=np.uint8)
+      case 'int16':
+        arrayout = np.array(list(map(np.int16, strvalues)), dtype=np.int16)
+      case 'uint16':
+        arrayout = np.array(list(map(np.uint16, strvalues)), dtype=np.uint16)
+      case 'int32':
+        arrayout = np.array(list(map(np.int32, strvalues)), dtype=np.int32)
+      case 'intc':
+        arrayout = np.array(list(map(np.intc, strvalues)), dtype=np.intc)
+      case 'unit32':
+        arrayout = np.array(list(map(np.uint32, strvalues)), dtype=np.uint32)
+      case 'uintc':
+        arrayout = np.array(list(map(np.uintc, strvalues)), dtype=np.uintc)
+      case 'intp':
+        arrayout = np.array(list(map(np.intp, strvalues)), dtype=np.intp)
+      case 'uintp':
+        arrayout = np.array(list(map(np.uintp, strvalues)), dtype=np.uintp)
+      case 'int32':
+        arrayout = np.array(list(map(np.int32, strvalues)), dtype=np.int32)
+      case 'int64':
+        arrayout = np.array(list(map(np.int64, strvalues)), dtype=np.int64)
+      case 'uint32':
+        arrayout = np.array(list(map(np.uint32, strvalues)), dtype=np.uint32)
+      case 'uint64':
+        arrayout = np.array(list(map(np.uint64, strvalues)), dtype=np.uint64)
+      case 'float16':
+        arrayout = np.array(list(map(np.float16, strvalues)), dtype=np.float16)
+      case 'float32':
+        arrayout = np.array(list(map(np.float32, strvalues)), dtype=np.float32)
+      case 'float64':
+        arrayout = np.array(list(map(np.float64, strvalues)), dtype=np.float64)
+      case 'float96':
+        arrayout = np.array(list(map(np.float96, strvalues)), dtype=np.float96)
+      case 'float128':
+        arrayout = np.array(list(map(np.float128, strvalues)), dtype=np.float128)
+      case 'complex64':
+        arrayout = np.array(list(map(np.complex64, strvalues)), dtype=np.complex64)
+      case 'complex128':
+        arrayout = np.array(list(map(np.complex128, strvalues)), dtype=np.complex128)
+      case 'complex192':
+        arrayout = np.array(list(map(np.complex192, strvalues)), dtype=np.complex192)
+      case 'complex256':
+        arrayout = np.array(list(map(np.complex256, strvalues)), dtype=np.complex256)
+      case _:
+        raise Exception('Write eML error: Invalid primitive data type ' + format)
+
+    return arrayout
     pass

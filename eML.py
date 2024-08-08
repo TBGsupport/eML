@@ -23,6 +23,8 @@
 import datetime
 import os
 
+import numpy as np
+
 from _Write_eML import _Write_eML
 from _Read_eML import _Read_eML
 
@@ -84,6 +86,20 @@ class eML:  # ==================================================================
     """
     if self.exists(name):
       self.eml_data.drop(name, None)
+    pass
+
+  def getArray(self, name):  # --------------------------------------------------- getArray >>
+    """
+    Get a previously stored array within the current eML file.
+
+    :param name:  user supplied identifier
+    :return: barray of the identifier
+    """
+    if self.exists(name):
+      return self.eml_data[name]
+    else:
+      return None
+    pass
 
   def getBoolean(self, name):  # --------------------------------------------------- getBoolean >>
     """
@@ -96,6 +112,7 @@ class eML:  # ==================================================================
       return self.eml_data[name]
     else:
       return None
+    pass
 
   def getInt(self, name):  # --------------------------------------------------- getInt >>
     """
@@ -205,6 +222,20 @@ class eML:  # ==================================================================
       return self.eml_data[name]
     else:
       return None
+
+  def setArray(self, identifier, value: np.ndarray):  # -------------------------------- setBoolean >>
+    """
+    writes an barray to the eml file
+
+    :param identifier: identifier for this array
+    :param value:  array to be written to the eml file
+    """
+    if identifier in self.identifiers:
+      raise Exception('eML error: Identifier ' + identifier + ' already exists')
+    self.identifiers[identifier] = 'array'
+
+    self.eml_data[identifier] = value
+    pass
 
   def setBoolean(self, identifier, value: bool):  # -------------------------------- setBoolean >>
     """
